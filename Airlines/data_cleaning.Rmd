@@ -1,0 +1,71 @@
+---
+title: "Untitled"
+author: "Jacqueline Chen"
+date: "2022/3/30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyverse)
+library(tibble)
+```
+
+```{r}
+AirTran_Traffic_Capacity <- read_excel("Traffic&Capacity AirTran Airways.xls")
+AirTran_Operating_Statistics_Actuals <- read_excel("AirTran Airways Aircraft Operating StatisticsActuals.xlsx", skip = 2)
+AirTran_Cost_Per_Block_Hour <- read_excel("AirTran Airways Aircraft Operating Statistics- Cost Per Block Hour (Unadjusted).xlsx", skip = 2)
+AirTran_Employee_Data_and_Analysis <- read_excel("AirTran Airways Employee Data and Analysis.xlsx", skip = 2)
+```
+
+```{r}
+# transpose the data frame 
+AirTran_Traffic_Capacity_new <- as.data.frame(t(AirTran_Traffic_Capacity))
+
+# covert row names into a column: Year 
+AirTran_Traffic_Capacity_new_1 <- tibble::rownames_to_column(AirTran_Traffic_Capacity_new[,1:36], "Year") 
+
+# make this second row 
+colnames(AirTran_Traffic_Capacity_new_1) <-AirTran_Traffic_Capacity_new_1[1,]
+AirTran_Traffic_Capacity_new_1 <- AirTran_Traffic_Capacity_new_1[-1,] 
+```
+
+```{r}
+sum_of_pax_rev <- as.data.frame(AirTran_Traffic_Capacity_new_1[,c(3,9, 15,21, 27, 33)]) 
+sum_of_pax_rev = sum_of_pax_rev %>% 
+  slice(-1) %>%
+  pivot_longer(1:6, names_to = "Operation Type", values_to = "Sum of Pax Rev")
+
+sum_of_total_rev <- as.data.frame(AirTran_Traffic_Capacity_new_1[,c(4,10, 16,22, 28, 34)]) 
+sum_of_total_rev = sum_of_total_rev %>% 
+  slice(-1) %>%
+  pivot_longer(1:6, names_to = "Operation Type", values_to = "Sum of Total Rev")
+
+sum_of_RPM <- as.data.frame(AirTran_Traffic_Capacity_new_1[,c(5,11, 17,23, 29, 35)]) 
+sum_of_RPM = sum_of_RPM %>% 
+  slice(-1) %>%
+  pivot_longer(1:6, names_to = "Operation Type", values_to = "Sum of RPM")
+
+sum_of_ASM <- as.data.frame(AirTran_Traffic_Capacity_new_1[,c(6,12, 18,24, 30, 36)]) 
+sum_of_ASM = sum_of_ASM %>% 
+  slice(-1) %>%
+  pivot_longer(1:6, names_to = "Operation Type", values_to = "Sum of ASM")
+
+sum_of_ACOpExpense <- as.data.frame(AirTran_Traffic_Capacity_new_1[,c( 7,13, 19,25, 31, 37)]) 
+sum_of_ACOpExpense = sum_of_ACOpExpense %>% 
+  slice(-1) %>%
+  pivot_longer(1:6, names_to = "Operation Type", values_to = "Sum of ACOpExpense")
+
+```
+
+```{r}
+df_list <- list(sum_of_pax_rev, sum_of_total_rev, sum_of_RPM, sum_of_ASM, sum_of_ACOpExpense)      
+#merge all data frames together
+df <- df_list %>% reduce(full_join, by='Operation Type')
+```
+

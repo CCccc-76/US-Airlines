@@ -1,0 +1,569 @@
+---
+title: "Untitled"
+author: "Jacqueline Chen"
+date: "2022/3/30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyverse)
+library(tibble)
+#ggpairs
+
+```
+
+```{r}
+#AirTran Airways
+AirTran_Traffic_Capacity <- read_excel("Traffic&Capacity AirTran Airways.xls")
+AirTran_Operating_Statistics_Actuals <- read_excel("AirTran Airways Aircraft Operating StatisticsActuals.xlsx", skip = 2)
+AirTran_Employee_Data_and_Analysis <- read_excel("AirTran Airways Employee Data and Analysis.xlsx", skip = 2)
+
+#Alaska Airlines
+AlaskaAir_Traffic_Capacity <- read_excel("Traffic&Capacity Alaska Airlines.xls")
+AlaskaAir_Operating_Statistics_Actuals <- read_excel("Alaska Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+AlaskaAir_Employee_Data_and_Analysis <- read_excel("Alaska Airlines Employee Data and Analysis.xls", skip = 2)
+
+#Allegiant Air
+AllegiantAir_Traffic_Capacity <- read_excel("Traffic&Capacity Allegiant Air.xls")
+AllegiantAir_Operating_Statistics_Actuals <- read_excel("Allegiant Air Aircraft Operating Statistics- Actuals.xls", skip = 2)
+AllegiantAir_Employee_Data_and_Analysis <- read_excel("Allegiant Air Employee Data and Analysis.xls", skip = 2)
+
+#America West 
+AmericaWest_Traffic_Capacity <- read_excel("Traffic&Capacity America West.xls")
+AmericaWest_Operating_Statistics_Actuals <- read_excel("America West Aircraft Operating Statistics- Actuals.xls", skip = 2)
+AmericaWest_Employee_Data_and_Analysis <- read_excel("America West Employee Data and Analysis.xls", skip = 2)
+
+#American Airlines
+AmericanAir_Traffic_Capacity <- read_excel("Traffic&Capacity American Airlines.xls")
+AmericanAir_Operating_Statistics_Actuals <- read_excel("American Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+AmericanAir_Employee_Data_and_Analysis <- read_excel("American Airlines Employee Data and Analysis.xls", skip = 2)
+
+#Continental Airlines
+ContinentalAir_Traffic_Capacity <- read_excel("Traffic&Capacity Continental Airlines.xls")
+ContinentalAir_Operating_Statistics_Actuals <- read_excel("Continental Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+ContinentalAir_Employee_Data_and_Analysis <- read_excel("Continental Airlines Employee Data and Analysis.xls", skip = 2)
+
+#Delta
+Delta_Traffic_Capacity <- read_excel("Traffic&Capacity Delta Airlines.xls")
+Delta_Operating_Statistics_Actuals <- read_excel("Delta Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+Delta_Employee_Data_and_Analysis <- read_excel("Delta Airlines Employee Data and Analysis.xls", skip = 2)
+
+#US Airlines
+USAir_Traffic_Capacity <- read_excel("Traffic&Capacity US Airways.xls")
+USAir_Operating_Statistics_Actuals <- read_excel("US Airways Aircraft Operating Statistics- Actuals.xls", skip = 2)
+USAir_Employee_Data_and_Analysis <- read_excel("US Airways Employee Data and Analysis.xls", skip = 2)
+
+#Frontier Airlines
+FrontierAir_Traffic_Capacity <- read_excel("Traffic&Capacity Frontier Airlines.xls")
+FrontierAir_Operating_Statistics_Actuals <- read_excel("Frontier Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+FrontierAir_Employee_Data_and_Analysis <- read_excel("Frontier Airlines Employee Data and Analysis.xls", skip = 2)
+
+#Hawaiian Airlines
+HawaiianAir_Traffic_Capacity <- read_excel("Traffic&Capacity Hawaiian Airlines.xls")
+HawaiianAir_Operating_Statistics_Actuals <- read_excel("Hawaiian Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+HawaiianAir_Employee_Data_and_Analysis <- read_excel("Hawaiian Airlines Employee Data and Analysis.xls", skip = 2)
+
+#Jetblue
+JetblueAir_Traffic_Capacity <- read_excel("Traffic&Capacity Jetblue Airways.xls")
+JetblueAir_Operating_Statistics_Actuals <- read_excel("Jetblue Airways Aircraft Operating Statistics- Actuals.xls", skip = 2)
+JetblueAir_Employee_Data_and_Analysis <- read_excel("Jetblue Airways Employee Data and Analysis.xls", skip = 2)
+
+#Northwest Airlines
+NorthwestAir_Traffic_Capacity <- read_excel("Traffic&Capacity Northwest Airlines.xls")
+NorthwestAir_Operating_Statistics_Actuals <- read_excel("Northwest Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+NorthwestAir_Employee_Data_and_Analysis <- read_excel("Northwest Airlines Employee Data and Analysis.xls", skip = 2)
+
+#Southwest Airlines
+SouthwestAir_Traffic_Capacity <- read_excel("Traffic&Capacity Southwest Airlines.xls")
+SouthwestAir_Operating_Statistics_Actuals <- read_excel("Southwest Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+SouthwestAir_Employee_Data_and_Analysis <- read_excel("Southwest Airlines Employee Data and Analysis.xls", skip = 2)
+
+#Spirit
+Spirit_Traffic_Capacity <- read_excel("Traffic&Capacity Spirit Airlines.xls")
+Spirit_Operating_Statistics_Actuals <- read_excel("Spirit Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+Spirit_Employee_Data_and_Analysis <- read_excel("Spirit Airlines Employee Data and Analysis.xls", skip = 2)
+
+#United Airlines
+UnitedAir_Traffic_Capacity <- read_excel("Traffic&Capacity United Airlines.xls")
+UnitedAir_Operating_Statistics_Actuals <- read_excel("United Airlines Aircraft Operating Statistics- Actuals.xls", skip = 2)
+UnitedAir_Employee_Data_and_Analysis <- read_excel("United Airlines Employee Data and Analysis.xls", skip = 2)
+
+```
+
+```{r}
+# Traffic_Capacity_tidy function 
+Traffic_Capacity_tidy <- function(x, y, z) {
+  rename(x, 
+          Operation_Type := {{ z }},
+         Revenue_Type = `...2`) %>%
+  filter(!is.na(Revenue_Type), !is.na(Operation_Type)) %>%
+  mutate(Airline = y, `1995` = as.numeric(`1995`)) %>%
+  pivot_longer(names_to = "Year", values_to = "Revenue", `1995`:`2020`) %>%
+  pivot_wider(names_from = Revenue_Type, values_from = Revenue)
+}
+
+# convert the AirTran_Traffic_Capacity data frame into tidy format
+AirTran_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(AirTran_Traffic_Capacity, "AirTran", `AirTran Airways`)
+
+# convert the AlaskaAir_Traffic_Capacity data frame into tidy format
+AlaskaAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(AlaskaAir_Traffic_Capacity, "AlaskaAir", `Alaska Airlines`)
+
+# AllegiantAir
+AllegiantAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(AllegiantAir_Traffic_Capacity, "AllegiantAir", `Allegiant Air`)
+
+# AmericanAir
+AmericanAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(AmericanAir_Traffic_Capacity, "AmericanAir", `American Airlines`)
+
+# AmericaWest
+AmericaWest_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(AmericaWest_Traffic_Capacity, "AmericanAir", `America West`)
+
+# ContinentalAir
+ContinentalAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(ContinentalAir_Traffic_Capacity, "ContinentalAir", `Continental Airlines`)
+
+# Delta
+Delta_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(Delta_Traffic_Capacity, "Delta", `Delta Airlines`)
+
+# FrontierAir
+FrontierAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(FrontierAir_Traffic_Capacity, "FrontierAir", `Frontier Airlines`)
+
+# HawaiianAir
+HawaiianAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(HawaiianAir_Traffic_Capacity, "HawaiianAir", `Hawaiian Airlines`)
+
+# JetblueAir
+JetblueAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(JetblueAir_Traffic_Capacity, "JetblueAir", `Jetblue Airways`)
+
+# NorthwestAir
+NorthwestAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(NorthwestAir_Traffic_Capacity, "NorthwestAir", `Northwest Airlines`)
+
+# SouthwestAir
+SouthwestAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(SouthwestAir_Traffic_Capacity, "SouthwestAir", `Southwest Airlines`)
+
+# Spirit
+Spirit_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(Spirit_Traffic_Capacity, "Spirit", `Spirit Airlines`)
+
+# UnitedAir
+UnitedAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(UnitedAir_Traffic_Capacity, "UnitedAir", `United Airlines`)
+
+# USAir
+USAir_Traffic_Capacity_tidy <- Traffic_Capacity_tidy(USAir_Traffic_Capacity, "USAir", `US Airways`)
+```
+
+
+```{r}
+# convert the AirTran_Operating_Statistics_Actuals data frame into tidy format
+Operating_Statistics_Actuals_tidy <- function(x, y, z) {
+  total_fleet_rownum <- which(x$`...2` == "Total Fleet")
+  x %>% 
+  slice(1:(total_fleet_rownum-1)) %>%
+  rename(Cost_and_Indicies_Types = `...2`) %>%
+  mutate(Body_Type = rep(Cost_and_Indicies_Types[c(1, 49, 97)], each=48),
+         Airline = y
+         ) %>%
+  slice(-c(1, 49, 97)) %>%
+  select(-`...1`) %>%
+  filter(!(Cost_and_Indicies_Types) %in% c("Indicies", "Daily Utilization per Aircraft", "Traffic")) %>%
+  filter(!is.na(Cost_and_Indicies_Types)) %>%
+  group_by(Body_Type, Cost_and_Indicies_Types) %>%
+  slice(1) %>%
+  ungroup() %>%
+  pivot_longer( cols = `1995`:`2020`,
+                names_to = "Year",
+                values_to = "Cost_and_Indicies") %>% 
+  mutate(Cost_and_Indicies_Types = sub(" (000)", "", Cost_and_Indicies_Types, fixed = TRUE)) %>%
+  pivot_wider(names_from = Cost_and_Indicies_Types, values_from = Cost_and_Indicies) }
+
+# convert the AirTran_Employee_Data_and_Analysis data frame into tidy format
+AirTran_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(AirTran_Operating_Statistics_Actuals, "AirTran")
+
+# convert the AlaskaAir_Traffic_Capacity data frame into tidy format
+AlaskaAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(AlaskaAir_Operating_Statistics_Actuals, "AlaskaAir")
+
+# AllegiantAir
+AllegiantAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(AllegiantAir_Operating_Statistics_Actuals, "AllegiantAir" )
+
+# AmericanAir
+AmericanAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(AmericanAir_Operating_Statistics_Actuals, "AmericanAir")
+
+# AmericaWest
+AmericaWest_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(AmericaWest_Operating_Statistics_Actuals, "AmericaWest")
+
+# ContinentalAir
+ContinentalAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(ContinentalAir_Operating_Statistics_Actuals, "ContinentalAir")
+
+# Delta
+Delta_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(Delta_Operating_Statistics_Actuals, "Delta")
+
+# FrontierAir
+FrontierAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(FrontierAir_Operating_Statistics_Actuals, "FrontierAir")
+
+# HawaiianAir
+HawaiianAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(HawaiianAir_Operating_Statistics_Actuals, "HawaiianAir")
+
+# JetblueAir
+JetblueAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(JetblueAir_Operating_Statistics_Actuals, "JetblueAir")
+
+# NorthwestAir
+NorthwestAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(NorthwestAir_Operating_Statistics_Actuals, "NorthwestAir")
+
+# SouthwestAir
+SouthwestAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(SouthwestAir_Operating_Statistics_Actuals, "SouthwestAir")
+
+# Spirit
+Spirit_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(Spirit_Operating_Statistics_Actuals, "Spirit")
+
+# UnitedAir
+UnitedAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(UnitedAir_Operating_Statistics_Actuals, "UnitedAir")
+
+# USAir
+USAir_Operating_Statistics_Actuals_tidy <- Operating_Statistics_Actuals_tidy(USAir_Operating_Statistics_Actuals, "USAir")
+
+Operating_Statistics_Actuals_tidy_df <- rbind(AirTran_Operating_Statistics_Actuals_tidy,
+                                              AlaskaAir_Operating_Statistics_Actuals_tidy,
+                                              AllegiantAir_Operating_Statistics_Actuals_tidy,
+                                              AmericanAir_Operating_Statistics_Actuals_tidy,
+                                              AmericaWest_Operating_Statistics_Actuals_tidy,
+                                              ContinentalAir_Operating_Statistics_Actuals_tidy,
+                                              Delta_Operating_Statistics_Actuals_tidy,
+                                              FrontierAir_Operating_Statistics_Actuals_tidy,
+                                              HawaiianAir_Operating_Statistics_Actuals_tidy,
+                                              JetblueAir_Operating_Statistics_Actuals_tidy,
+                                              NorthwestAir_Operating_Statistics_Actuals_tidy,
+                                              SouthwestAir_Operating_Statistics_Actuals_tidy,
+                                              Spirit_Operating_Statistics_Actuals_tidy, 
+                                              UnitedAir_Operating_Statistics_Actuals_tidy,
+                                              USAir_Operating_Statistics_Actuals_tidy)
+```
+
+```{r}
+# Employee_Data_and_Analysis_tidy function 
+
+Employee_Data_and_Analysis_tidy <- function(x, y){  
+df <- x %>% 
+  rename(Indicies_Types = `...1`) %>% 
+  mutate(Airline = y) %>%
+  slice(-1, -8, -14, -48, -58, -c(81:83)) %>% 
+  filter(!is.na(Indicies_Types)) 
+  
+df1 <- df %>% 
+  slice(8:50) %>% 
+  slice(-42) %>% #summary row, not necessary 
+  mutate(variables = rep(Indicies_Types[c(1, 8, 15, 22, 29, 36)], each=7)) %>% 
+  slice(-c(1, 8, 15, 22, 29, 36))
+
+df2 <- df %>%
+  slice(1:7) %>% 
+  mutate(variables = Indicies_Types, Indicies_Types = rep("NA", 7))
+
+df <- rbind(df1, df2)
+df %>% 
+  pivot_longer( cols = `1995`:`2020`,
+                names_to = "Year",
+                values_to = "Indicies") %>% 
+  pivot_wider(names_from = variables, values_from = Indicies) }
+
+# convert the AirTran_Employee_Data_and_Analysis data frame into tidy format
+AirTran_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(AirTran_Employee_Data_and_Analysis, "AirTran")
+
+# convert the AlaskaAir_Traffic_Capacity data frame into tidy format
+AlaskaAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(AlaskaAir_Employee_Data_and_Analysis, "AlaskaAir")
+
+# AllegiantAir
+AllegiantAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(AllegiantAir_Employee_Data_and_Analysis, "AllegiantAir")
+
+# AmericanAir
+AmericanAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(AmericanAir_Employee_Data_and_Analysis, "AmericanAir")
+
+# AmericaWest
+AmericaWest_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(AmericaWest_Employee_Data_and_Analysis, "AmericaWest")
+
+# ContinentalAir
+ContinentalAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(ContinentalAir_Employee_Data_and_Analysis, "ContinentalAir")
+
+Employee_Data_and_Analysis_tidy_Delta <- function(x, y){  
+df <- x %>% 
+  rename(Indicies_Types = `...1`) %>% 
+  mutate(Airline = y) %>%
+  slice(-1, -8, -14, -48, -58, -c(81:83)) %>% 
+  filter(!is.na(Indicies_Types)) 
+  
+df1 <- df %>% 
+  slice(8:50) %>% 
+  slice(-42) %>% #summary row, not necessary 
+  mutate(variables = rep(Indicies_Types[c(1, 8, 15, 22, 29, 36)], each=7)) %>% 
+  slice(-c(1, 8, 15, 22, 29, 36))
+
+df2 <- df %>%
+  slice(1:7) %>% 
+  mutate(variables = Indicies_Types, Indicies_Types = rep("NA", 7))
+
+df <- rbind(df1, df2)
+df %>% 
+  pivot_longer( cols = `1995`:`2018`,
+                names_to = "Year",
+                values_to = "Indicies") %>% 
+  pivot_wider(names_from = variables, values_from = Indicies) }
+
+# Delta
+Delta_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy_Delta(Delta_Employee_Data_and_Analysis, "Delta")
+
+# FrontierAir
+FrontierAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(FrontierAir_Employee_Data_and_Analysis, "FrontierAir")
+
+# HawaiianAir
+HawaiianAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(HawaiianAir_Employee_Data_and_Analysis, "HawaiianAir")
+
+# JetblueAir
+JetblueAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(JetblueAir_Employee_Data_and_Analysis, "JetblueAir")
+
+# NorthwestAir
+NorthwestAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(NorthwestAir_Employee_Data_and_Analysis, "NorthwestAir")
+
+# SouthwestAir
+SouthwestAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(SouthwestAir_Employee_Data_and_Analysis, "SouthwestAir")
+
+# Spirit
+Spirit_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(Spirit_Employee_Data_and_Analysis, "Spirit")
+
+# UnitedAir
+UnitedAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(UnitedAir_Employee_Data_and_Analysis, "UnitedAir")
+
+
+# USAir
+USAir_Employee_Data_and_Analysis_tidy <- Employee_Data_and_Analysis_tidy(USAir_Employee_Data_and_Analysis, "USAir")
+
+```
+
+```{r}
+# combine data frames by catogory 
+Traffic_Capacity_tidy_df <- rbind(AirTran_Traffic_Capacity_tidy,
+                                              AlaskaAir_Traffic_Capacity_tidy,
+                                              AllegiantAir_Traffic_Capacity_tidy,
+                                              AmericanAir_Traffic_Capacity_tidy,
+                                              AmericaWest_Traffic_Capacity_tidy,
+                                              ContinentalAir_Traffic_Capacity_tidy,
+                                              Delta_Traffic_Capacity_tidy,
+                                              FrontierAir_Traffic_Capacity_tidy,
+                                              HawaiianAir_Traffic_Capacity_tidy,
+                                              JetblueAir_Traffic_Capacity_tidy,
+                                              NorthwestAir_Traffic_Capacity_tidy,
+                                              SouthwestAir_Traffic_Capacity_tidy,
+                                              Spirit_Traffic_Capacity_tidy, 
+                                              UnitedAir_Traffic_Capacity_tidy,
+                                              USAir_Traffic_Capacity_tidy)
+
+Operating_Statistics_Actuals_tidy_df <- rbind(AirTran_Operating_Statistics_Actuals_tidy,
+                                              AlaskaAir_Operating_Statistics_Actuals_tidy,
+                                              AllegiantAir_Operating_Statistics_Actuals_tidy,
+                                              AmericanAir_Operating_Statistics_Actuals_tidy,
+                                              AmericaWest_Operating_Statistics_Actuals_tidy,
+                                              ContinentalAir_Operating_Statistics_Actuals_tidy,
+                                              Delta_Operating_Statistics_Actuals_tidy,
+                                              FrontierAir_Operating_Statistics_Actuals_tidy,
+                                              HawaiianAir_Operating_Statistics_Actuals_tidy,
+                                              JetblueAir_Operating_Statistics_Actuals_tidy,
+                                              NorthwestAir_Operating_Statistics_Actuals_tidy,
+                                              SouthwestAir_Operating_Statistics_Actuals_tidy,
+                                              Spirit_Operating_Statistics_Actuals_tidy, 
+                                              UnitedAir_Operating_Statistics_Actuals_tidy,
+                                              USAir_Operating_Statistics_Actuals_tidy)
+
+Employee_Data_and_Analysis_tidy_df <- rbind(AirTran_Employee_Data_and_Analysis_tidy,
+                                              AlaskaAir_Employee_Data_and_Analysis_tidy,
+                                              AllegiantAir_Employee_Data_and_Analysis_tidy,
+                                              AmericanAir_Employee_Data_and_Analysis_tidy,
+                                              AmericaWest_Employee_Data_and_Analysis_tidy,
+                                              ContinentalAir_Employee_Data_and_Analysis_tidy,
+                                              Delta_Employee_Data_and_Analysis_tidy,
+                                              FrontierAir_Employee_Data_and_Analysis_tidy,
+                                              HawaiianAir_Employee_Data_and_Analysis_tidy,
+                                              JetblueAir_Employee_Data_and_Analysis_tidy,
+                                              NorthwestAir_Employee_Data_and_Analysis_tidy,
+                                              SouthwestAir_Employee_Data_and_Analysis_tidy,
+                                              Spirit_Employee_Data_and_Analysis_tidy, 
+                                              UnitedAir_Employee_Data_and_Analysis_tidy,
+                                              USAir_Employee_Data_and_Analysis_tidy)
+
+```
+
+```{r}
+
+
+# Stock Price
+# AirTran is private 
+#AirTran_annual_evaluation <- read.csv("ALK_annual_valuation_measures.csv")
+
+#Alaska Airlines
+AlaskaAir_SP <- read.csv("ALK.csv")
+AlaskaAir_annual_valuation <- read.csv("ALK_annual_valuation_measures.csv")
+
+#Allegiant Air
+AllegiantAir_SP <- read.csv("ALGT.csv")
+AllegiantAir_annual_valuation <- read.csv("ALGT_annual_valuation_measures.csv")
+
+#America West merged with US Airways
+
+#American Airlines
+AmericanAir_SP <- read.csv("AAL.csv")
+AmericanAir_annual_valuation <- read.csv("AAL_annual_valuation_measures.csv")
+
+#Continental Airlines
+
+#Delta
+Delta_SP <- read.csv("DAL.csv")
+Delta_annual_valuation <- read.csv("DAL_annual_valuation_measures.csv")
+
+#US Airlines belongs to AAL
+
+#Frontier Airlines no prior than 2021
+
+#Hawaiian Airlines
+HawaiianAir_SP <- read.csv("HA.csv")
+HawaiianAir_annual_valuation <- read.csv("HA_annual_valuation_measures.csv")
+
+#Jetblue
+JetblueAir_SP <- read.csv("JBLU.csv")
+JetblueAir_annual_valuation <- read.csv("JBLU_annual_valuation_measures.csv")
+
+#Northwest Airlines is private 
+
+#Southwest Airlines
+SouthwestAir_SP <- read.csv("LUV.csv")
+SouthwestAir_annual_valuation <- read.csv("LUV_annual_valuation_measures.csv")
+
+#Spirit
+Spirit_SP <- read.csv("SAVE.csv")
+Spirit_annual_valuation <- read.csv("SAVE_annual_valuation_measures.csv")
+
+#United Airlines
+UnitedAir_SP <- read.csv("UAL.csv")
+UnitedAir_annual_valuation <- read.csv("UAL_annual_valuation_measures.csv")
+```
+
+```{r}
+# Find annual stock value 
+SP_Valuation <- function(df1, df2, y) { 
+  df1 <- df1 %>% 
+    dplyr::mutate(year = lubridate::year(Date), 
+                month = lubridate::month(Date), 
+                day = lubridate::day(Date)) %>% 
+  select(-Date) %>% 
+  filter(year %in% 1995:2020) %>%
+  group_by(year) %>% 
+  summarize(avg_SP = mean(Adj.Close))
+  
+  df2 <- df2 %>% 
+    select(-ttm) %>%
+  pivot_longer(cols = -name,
+                names_to = "Date",
+                values_to = "Values") %>% 
+  separate(col = Date, into = c("x", "year"), sep = "12.31.") %>% 
+  select(-x) %>% 
+  pivot_wider(names_from = name, values_from = Values) %>% 
+  filter( year %in% 1995:2020)
+  
+  merge(df1,df2) %>% 
+    mutate( Airline = y )
+  }
+
+AlaskaAir_SP_Valuation_df <- SP_Valuation(AlaskaAir_SP, AlaskaAir_annual_valuation, "AlaskaAir")
+AllegiantAir_SP_Valuation_df <- SP_Valuation(AllegiantAir_SP, AllegiantAir_annual_valuation, "AllegiantAir")
+AmericanAir_SP_Valuation_df <- SP_Valuation(AmericanAir_SP, AmericanAir_annual_valuation, "AmericanAir")
+Delta_SP_Valuation_df <- SP_Valuation(Delta_SP, Delta_annual_valuation, "Delta")
+HawaiianAir_SP_Valuation_df <- SP_Valuation(HawaiianAir_SP, HawaiianAir_annual_valuation, "HawaiianAir")
+JetblueAir_SP_Valuation_df <- SP_Valuation(JetblueAir_SP, JetblueAir_annual_valuation, "JetblueAir")
+SouthwestAir_SP_Valuation_df <- SP_Valuation(SouthwestAir_SP, SouthwestAir_annual_valuation, "SouthwestAir")
+Spirit_SP_Valuation_df <- SP_Valuation(Spirit_SP, Spirit_annual_valuation, "Spirit")
+UnitedAir_SP_Valuation_df <- SP_Valuation(UnitedAir_SP, UnitedAir_annual_valuation, "UnitedAir")
+
+
+SP_Valuation_df <- rbind(AlaskaAir_SP_Valuation_df, AllegiantAir_SP_Valuation_df, AmericanAir_SP_Valuation_df, Delta_SP_Valuation_df, HawaiianAir_SP_Valuation_df, JetblueAir_SP_Valuation_df, SouthwestAir_SP_Valuation_df, Spirit_SP_Valuation_df, UnitedAir_SP_Valuation_df)
+
+SP_Valuation_df <- SP_Valuation_df %>% 
+  mutate(across(MarketCap:EnterprisesValueEBITDARatio, readr::parse_number)) %>% 
+  select(-ForwardPeRatio, -PegRatio) %>% 
+  filter(!is.na(PeRatio), !is.na(PsRatio), !is.na(PbRatio))
+```
+
+```{r}
+library(leaps)
+set.seed(1)
+
+train = SP_Valuation_df %>%
+  sample_frac(0.5)
+
+test = SP_Valuation_df %>%
+  setdiff(train)
+
+regfit_best_train = regsubsets(avg_SP~., data = train, nvmax = 10)
+test_mat = model.matrix (avg_SP~., data = test)
+
+val_errors = rep(NA,19)
+
+for(i in 1:10){
+  coefi = coef(regfit_best_train, id = i)
+  pred = test_mat[,names(coefi)]%*%coefi
+  val_errors[i] = mean((test$avg_SP-pred)^2)
+}
+
+min = which.min(val_errors)
+plot(val_errors, type = 'b')
+points(min, val_errors[min][1], col = "red", cex = 2, pch = 20)
+
+regfit_best = regsubsets(avg_SP~., data = SP_Valuation_df, nvmax = min)
+coef(regfit_best, min)
+```
+
+```{r}
+#Traffic_Capacity_tidy_df
+EVRR_df <- SP_Valuation_df %>% 
+  select(EnterprisesValueRevenueRatio, year, Airline) %>% 
+  rename(Year = year) %>% 
+  mutate( Year = as.factor(Year))
+
+Traffic_Capacity_EVRR_df <- Traffic_Capacity_tidy_df %>% 
+  left_join(EVRR_df, by = c("Year" = "Airline"))
+
+Operating_Statistics_Actuals_EVRR_df <- Operating_Statistics_Actuals_tidy_df %>% 
+  left_join(EVRR_df, by = c("Year" = "Airline"))
+
+Employee_Data_and_Analysis_EVRR_df <- Employee_Data_and_Analysis_tidy_df %>% 
+  left_join(EVRR_df, by = c("Year" = "Airline"))
+
+analysis_func <- function(df_new, x) {
+  set.seed(1)
+  train = df_new %>%
+  sample_frac(0.5)
+  
+  test = df_new %>%
+  setdiff(train)
+  
+  regfit_best_train = regsubsets(EnterprisesValueRevenueRatio~., data = train, nvmax = x)
+  test_mat = model.matrix (EnterprisesValueRevenueRatio~., data = test)
+  
+  val_errors = rep(NA,19)
+  
+  for(i in 1:x){
+  coefi = coef(regfit_best_train, id = i)
+  pred = test_mat[,names(coefi)]%*%coefi
+  val_errors[i] = mean((test$EnterprisesValueRevenueRatio-pred)^2)}
+  
+  min = which.min(val_errors)
+  plot(val_errors, type = 'b')
+  points(min, val_errors[min][1], col = "red", cex = 2, pch = 20)
+  regfit_best = regsubsets(EnterprisesValueRevenueRatio~., data = df_new, nvmax = min)
+  coef(regfit_best, min)}
+
+
+analysis_func(Traffic_Capacity_EVRR_df, 8)
+analysis_func(Operating_Statistics_Actuals_EVRR_df, 35)
+analysis_func(Employee_Data_and_Analysis_EVRR_df, 16)
+
+```
+
+
